@@ -206,7 +206,7 @@ class Aeronave:
 
         self.DOC_flt += custo_combustivel + custo_oleo
         
-        return self.DOC_flt
+        return custo_combustivel + custo_oleo
 
         
     def calcular_custo_seguro(self):
@@ -227,9 +227,3 @@ class Aeronave:
         self.DOC_flt += custo_seguro
     
         return custo_seguro
-
-           
-       
-   
-        
-  

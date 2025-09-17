@@ -8,16 +8,16 @@ Created on Wed May 28 13:22:36 2025
 """
 capital_cost_calculator_caravan.py
 ---------------------------------
-Python module to estimate the **capital‐cost component** of the Direct Operating
-Cost (DOC) for a Cessna 208B Caravan (or similar regional aircraft) in three
+Python module to estimate the **capital-cost component** of the Direct Operating
+Cost (DOC) for a Cessna 208B Caravan (or similar regional aircraft) in three
 acquisition scenarios:
 
-1. **Loan‑financed purchase** (debt‑funded ownership)
+1. **Loan-financed purchase** (debt-funded ownership)
 2. **Operating lease**
 3. **Outright purchase with own equity**
 
 The implementation follows the *capital cost recovery* logic described by
-Roskam (Airplane Design, Part VIII) and is fully commented so that each input
+Roskam (Airplane Design, Part VIII) and is fully commented so that each input
 parameter and assumption is explicit.
 
 Usage examples are provided at the bottom of the file under the
@@ -37,7 +37,7 @@ def capital_recovery_factor(interest: float, years: int) -> float:
 
     Args:
         interest: Annual nominal interest (or discount) rate as *decimal*
-                  (e.g. 0.08 for 8 % a.a.).
+                  (e.g. 0.08 for 8 % a.a.).
         years: Economic life or loan term in whole years.
 
     Returns:
@@ -95,14 +95,14 @@ def compute_capital_cost(inputs: CapitalCostInputs, scenario: Scenario) -> Capit
         scenario: "loan", "lease", or "own".
 
     Returns:
-        CapitalCostResult with annual, hourly, and per‑nautical‑mile costs.
+        CapitalCostResult with annual, hourly, and per-nautical-mile costs.
     """
     P = inputs.price_usd
     Vr = inputs.residual_fraction * P  # Residual value at end of life
 
     # Annual cost depends on the scenario
     if scenario == "loan":
-       # --- Loan‑financed purchase ---
+       # --- Loan-financed purchase ---
        loan_amount = inputs.loan_pct * P      # principal financiado
         
        annual_interest = 0.5 * loan_amount * inputs.loan_interest
@@ -128,7 +128,7 @@ def compute_capital_cost(inputs: CapitalCostInputs, scenario: Scenario) -> Capit
     else:
         raise ValueError("scenario must be 'loan', 'lease', or 'own'")
 
-    # Convert to hourly and per‑nautical‑mile costs
+    # Convert to hourly and per-nautical-mile costs
     hourly_cost = annual_cost / inputs.annual_hours
     cost_per_nm = hourly_cost / inputs.block_speed_kts
 
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     # Default example parameters for a Cessna 208B Caravan
     params = CapitalCostInputs(
         price_usd=3_000_000,  # catalogue price
-        residual_fraction=0.12,  # 12 % residual at end of life
+        residual_fraction=0.12,  # 12 % residual at end of life
         economic_life_yr=15,
         annual_hours=750,
         block_speed_kts=132,

@@ -86,7 +86,7 @@ print(f"Resultados gravados em {out_path.resolve()}")
 
 # -------- 8. Gráfico de barras --------------------------------------------
 plt.figure(figsize=(8,4))
-plt.bar(components.keys(), components.values())
+plt.bar(list(components.keys()), list(components.values()))
 plt.ylabel("USD / milha náutica")
 plt.title("DOC – Cessna 208B Caravan (Azul Conecta)")
 plt.xticks(rotation=30, ha="right")

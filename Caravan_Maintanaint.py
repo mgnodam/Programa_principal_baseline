@@ -167,5 +167,3 @@ class CustoManutencao:
         
         
         return C_lab_ap + C_lab_eng + C_mat_ap + C_mat_eng + C_amb
-    
-
