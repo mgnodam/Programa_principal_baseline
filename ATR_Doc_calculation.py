@@ -19,27 +19,31 @@ Fluxo:
        - Taxas de navegação
   3. Converte tudo para USD/nm; soma DOC_total.
   4. Salva resultados em “Caravan_DOC.dat”.
-  5. Gera gráfico de barras com Matplotlib.
+Fortalecimento da integração entre ensino, pesquisa e indústria.
+
+Oportunidade de atualização técnica em temas emergentes da aviação.
+
+Ampliação de redes de colaboração com empresas e órgãos reguladores.  5. Gera gráfico de barras com Matplotlib.
 """
 import json
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-from Operation_input_Caravan import inputs
+from ATR_Operation_input_ian_500nm import inputs
 
 # ---- módulos de cálculo fornecidos pelo usuário --------------------------
-from Caravan_Flight import Aeronave
-from Caravan_Maintanaint import CustoManutencao
-from Caravan_Depreciation import CustoDepreciacao
-from Caravan_Capital_cost import CapitalCostInputs, compute_capital_cost
-from Caravan_Taxes import nav_charges     # já devolve USD/nm se usd_per_brl != None
+from ATR_Flight import Aeronave
+from ATR_Maintanaint import CustoManutencao
+from ATR_Depreciation import CustoDepreciacao
+from ATR_Capital_cost import CapitalCostInputs, compute_capital_cost
+from ATR_tax import TaxasNavegacao     # já devolve USD/nm se usd_per_brl != None
 
 # -------- 1. FLIGHT (tripulação + fuel + oil + insurance) ------------------
 air = Aeronave(**inputs["flight"])
-air.calcular_custo_tripulacao()
-air.calcular_custo_combustivel_oleo()
-air.calcular_custo_seguro()
-c_flight      = air.calcular_doc()                   # USD/nm
+c_trip = air.calcular_custo_tripulacao()                    # USD/nm
+c_combustivel = air.calcular_custo_combustivel_oleo()    # USD/nm
+c_seguro = air.calcular_custo_seguro()                      # USD/nm
+
 
 # -------- 2. MANUTENÇÃO ----------------------------------------------------
 maint_params  = inputs["maint"]
@@ -56,21 +60,24 @@ cap_inputs    = CapitalCostInputs(**cap_inp_dict)
 c_capital     = compute_capital_cost(cap_inputs, scenario).cost_per_nm_usd        # USD/nm
 
 # -------- 5. TAXAS (DECEA) -------------------------------------------------
-tax_params    = inputs["taxes"] | {"usd_per_brl": inputs["usd_per_brl"]}
-c_taxes       = nav_charges(**tax_params).usd_per_nm                              # USD/nm
+tax_params = dict(inputs["taxes"])
+tax_params["usd_per_brl"] = inputs["shared"]["usd_per_brl"]
+c_taxes       = TaxasNavegacao(**tax_params).usd_per_nm                              # USD/nm
 
 # -------- 6. DOC TOTAL -----------------------------------------------------
 components = {
-    "Tripulação + Combustível + Seguro": c_flight,
-    "Manutenção"        : c_maint,
-    "Depreciação"       : c_depr,
-    "Custo do Dinheiro" : c_capital,
-    "Taxas"             : c_taxes,
+    "Crew": c_trip,
+    "Fuel + oil": c_combustivel,
+    "Insurance": c_seguro,   
+    "Maintenance": c_maint,
+    "Depreciation": c_depr,
+    "Cost of Capital": c_capital,
+    "Airport- fee bucket": c_taxes,
 }
 doc_total = sum(components.values())
 
 # -------- 7. Salva arquivo .dat -------------------------------------------
-out_path = Path("Caravan_DOC.dat")
+out_path = Path("ATR_DOC.dat")
 with out_path.open("w", encoding="utf-8") as f:
     for k, v in components.items():
         f.write(f"{k:35s} {v:10.4f} USD/nm\n")
@@ -79,10 +86,10 @@ print(f"Resultados gravados em {out_path.resolve()}")
 
 # -------- 8. Gráfico de barras --------------------------------------------
 plt.figure(figsize=(8,4))
-plt.bar(components.keys(), components.values())
+plt.bar(list(components.keys()), list(components.values()))
 plt.ylabel("USD / milha náutica")
-plt.title("DOC – Cessna 208B Caravan (Azul Conecta)")
+plt.title("DOC – ATR 72 (Azul)")
 plt.xticks(rotation=30, ha="right")
 plt.tight_layout()
-plt.savefig("Caravan_DOC_bars.png", dpi=300)
+plt.savefig("ATR_DOC_bars.png", dpi=300)
 plt.show()
