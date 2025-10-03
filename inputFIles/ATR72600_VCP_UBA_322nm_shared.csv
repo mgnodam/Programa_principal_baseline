@@ -1,8 +1,0 @@
-var,value,unit,source
-annual_hours,800,h,caravan
-block_time_hr,1.5,h,chatgpt
-block_speed_kts,230,kts,chatgpt
-distance_km,370,km,VCP_UBA
-usd_per_brl,0.19,,20250919
-preco_aeronave,24000000,USD,chatgpt
-num_motores,2,un,SpecSheet

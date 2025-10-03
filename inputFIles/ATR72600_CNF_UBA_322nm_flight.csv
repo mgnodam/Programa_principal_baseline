@@ -1,0 +1,31 @@
+var,value,unit,source
+tipo,Aviação Geral,-,caravan
+peso_max_decolagem,23000,kg,SpecSheet
+velocidade_cruzeiro,270,kts,SpecSheet
+num_motores,2,un,SpecSheet
+tipo_motor,turbine,,SpecSheet
+preco_aeronave,19000000,USD,Turboprop_report_onscreen p53 (media de previsoes de varias companhias a partir de jan23)
+bloco_horas,1.42,h,https://www.flightconnections.com/pt/voos-de-cnf-para-uba
+num_pilotos,1,un,SpecSheet
+num_copilotos,1,un,SpecSheet
+num_eng_voo,0,un,chatgpt
+num_comissarios,2,un,RBAC121 (chat)
+salario_piloto_iniciante,17978,USD/ano,Glassdoor (chatgpt)
+salario_copiloto_iniciante,12360,USD/ano,Glassdoor (chatgpt)
+salario_eng_voo_iniciante,0,USD/ano,chatgpt
+salario_comissario_iniciante,7865,USD/ano,Glassdoor (chatgpt)
+senioridade_piloto,sênior,-,
+senioridade_copiloto,sênior,-,
+senioridade_eng_voo,sênior,-,
+senioridade_comissario,sênior,-,
+despesas_viagem_piloto,0,USD/h_bloco,PENDENTE
+despesas_viagem_copiloto,0,USD/h_bloco,PENDENTE
+despesas_viagem_eng_voo,0,USD/h_bloco,PENDENTE
+despesas_viagem_comissario,0,USD/h_bloco,PENDENTE
+horas_voo_anuais,1900,h,shared
+combustivel_usado,994,lbs,chatgpt
+preco_combustivel,3.722,USD/gal,https://jet-a1-fuel.com/price/brazil?utm_source=chatgpt.com
+densidade_combustivel,6.74,lbs/gal,https://acilubes.com/products/mobil-jet-oil-254-synthetic-jet-engine-oil-55-gallon-drum?utm_source=chatgpt.com
+preco_oleo,102.20,USD/gal,mercado
+densidade_oleo,8.33,lbs/gal,SpecSheet
+taxa_seguro,0.015,%valor,chatgpt (vide planilha) suspeito estar em 2.5% antes
