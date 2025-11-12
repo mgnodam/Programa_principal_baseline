@@ -93,34 +93,29 @@ flight = dict(
         taxa_seguro                   = flight_data["taxa_seguro"],                   # Taxa  de seguro baseado em percentagem do valor de aquisição da aeronave - valor  2.5 % por ser monomotor [Ian]
     )
 
-# --- dicionário principal -------------------------------------------------
-inputs = {
-    "shared": shared,
-
-    "flight": flight,
-
-
-    "maint": dict(
+maint_data = sheet_to_dict("https://docs.google.com/spreadsheets/d/1Fxu3ifO48WLc7Kz1cIA6wZqkEKUnplRRjY6HR_dA7B0/gviz/tq?tqx=out:csv")
+maint = dict(
+        annual_hours = shared["annual_hours"],
         block_time_hr  = shared["block_time_hr"],
-        hr_check_a = 1,          # A — Daily check / pré-voo
-        hr_check_b = 10,         # B — 25 h
-        hr_check_c = 20,         # C — 50 h
-        hr_check_d = 40,         # D — 100 h
-        hr_check_e = 50,         # E — 200 h
-        hr_check_f = 55,         # F — 600 h (ou anual)
-        hr_check_i = 0,          # I — inspeções especiais
+        hr_check_d = maint_data["hr_check_d"],          # D — Daily check / pré-voo
+        hr_check_a = maint_data["hr_check_a"],         # A — 750 h (Geral)
+        hr_check_b = maint_data["hr_check_b"],         # B — 12000 h (Blades)
+        hr_check_c = maint_data["hr_check_c"],         # C — 8000 h (Corrosão)
+        hr_check_fc = maint_data["hr_check_fc"],         # D — 7000 h (Fadiga)
+        hr_check_m = maint_data["hr_check_m"],         # E — 12M/24M
+
         # horas de manutenção por tipo de check (motores)
-        hr_check_g = 100,        # G — Hot Section Inspection (HSI)
-        hr_check_h = 200,        # H — Overhaul de Motor (TBO)
-        # demais parâmetros de custo 
-        R1_ap      = 8.7,        #  Taxa de mão de obra de manutenção do airframe e sistemas em USD/hora. [planilha sindicato/mercado]
+        hr_check_apu = maint_data["hr_check_apu"],        # APU — 6000 H
+        hr_check_tbo = maint_data["hr_check_tbo"],        # TBO — 20000 (Overhaul de Motor (TBO))
+        # demais parâmetros de custo
+        R1_ap      = maint_data["r1_ap"],        #  Taxa de mão de obra de manutenção do airframe e sistemas em USD/hora. [planilha sindicato/mercado]
         V_bl       = shared["block_speed_kts"],
         Ne         = shared["num_motores"],
-        R1_eng     = 8.7,        #  Taxa de mão de obra de manutenção dos motores em USD/hora. [planilha sindicato/mercado]
-        C_mat_apblhr  = 8.7*4,      #  Custo dos materiais de manutenção do airframe e sistemas por bloco de hora em USD/hora.[Ian - 80% insumos 20% mão-de-obra]
-        C_mat_engblhr = 8.7*4,      #  Custo dos materiais de manutenção dos motores por bloco de hora em USD/hora. [Ian - 80% insumos 20% mão-de-obra]
+        R1_eng     = 1.35 * maint_data["r1_ap"],        #  Taxa de mão de obra de manutenção dos motores em USD/hora. [planilha sindicato/mercado]
+        C_mat_apblhr  = 0.67 * maint_data["r1_ap"],      #  Custo dos materiais de manutenção do airframe e sistemas por bloco de hora em USD/hora.[Ian - 40% insumos 60% mão-de-obra]
+        C_mat_engblhr = 1.86 * 1.35 * maint_data["r1_ap"],      #  (1.86*r1_eng) Custo dos materiais de manutenção dos motores por bloco de hora em USD/hora. [Ian - 65% insumos 35% mão-de-obra]
         
-        f_amb_lab  = 1.25,       #  Fator de sobrecarga para mão de obra.        
+        f_amb_lab  = maint_data["f_amb_lab"],       #  Fator de sobrecarga para mão de obra.        
        # A mão de obra direta (salário + encargos trabalhistas já embutidos na “man-hour rate”) não paga todo o ecossistema que permite executar o trabalho. 
        # O fator de sobrecarga repassa esse overhead às horas faturadas.
     
@@ -130,7 +125,7 @@ inputs = {
        # • Administração da oficina, planejamento, qualidade
        # • Seguro de responsabilidade de manutenção
         
-        f_amb_mat  = 1.15,      #  Fator de sobrecarga para materiais.   
+        f_amb_mat  = maint_data["f_amb_lab"],      #  Fator de sobrecarga para materiais.   
         
        # Peças compradas pelo preço “na caixa” precisam chegar, ser armazenadas, testadas, 
        # giradas em estoque; esses custos indiretos são capturados pelo multiplicador.      
@@ -139,66 +134,72 @@ inputs = {
        # • Custos de estocagem (almoxarifado, controle de validade)
        # • Ferramentas de inspeção, embalagens especiais
        # • Perdas e sucatas
-        
-        
-    ),
-    
-    
+       )
 
-    "capital": dict(
+capital_data = sheet_to_dict("https://docs.google.com/spreadsheets/d/1m39yP3Li0vya-tfNk_VKto2Nfjzk42-RW4cqVjI2078/gviz/tq?tqx=out:csv")
+capital = dict(
         price_usd         = shared["preco_aeronave"],
-        residual_fraction = 0.12,
-        economic_life_yr  = 15,
+        residual_fraction = capital_data["residual_fraction"],
+        economic_life_yr  = capital_data["economic_life_yr"],
         annual_hours      = shared["annual_hours"],
         block_speed_kts   = shared["block_speed_kts"],
-        scenario          = "own",  # "loan", "lease" ou "own"
-        loan_pct          = 0.8,  # Fraction of price financed                            [proporção financiada]  
-        loan_interest     = 0.06, # Nominal annual interest rate (decimal)                [ taxa de juros]
-        loan_term_yr      = 10,   # Loan amortisation period (years)                      [prazo]
-        lease_rate_factor_monthly = 0.015, # Monthly LRF (decimal of price)  [LRF mensal] Jato 0.9%/ monomotor turbo-hélice 1.5 % por ser mais baixo o valor [Ian]
-        wacc_equity       = 0.08,        # Opportunity cost of capital (decimal)          [custo de oportunidade indicado[]
-    ),
+        scenario          = capital_data["scenario"],  # "loan", "lease" ou "own"
+        loan_pct          = capital_data["loan_pct"],  # Fraction of price financed                            [proporção financiada]  
+        loan_interest     = capital_data["loan_interest"], # Nominal annual interest rate (decimal)                [ taxa de juros]
+        loan_term_yr      = capital_data["loan_term_yr"],   # Loan amortisation period (years)                      [prazo]
+        lease_rate_factor_monthly = capital_data["lease_rate_factor_monthly"], # Monthly LRF (decimal of price)  [LRF mensal] Jato 0.9%/ monomotor turbo-hélice 1.5 % por ser mais baixo o valor [Ian]
+        wacc_equity       = capital_data["wacc_equity"],        # Opportunity cost of capital (decimal)          [custo de oportunidade indicado[]
+    )
 
-      
-
-
-    "depr": dict(
-        F_dap = 0.70,                           # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
+deprecitation_data = sheet_to_dict("https://docs.google.com/spreadsheets/d/1DSFoWATVe3zwzvHpfVXW301QOwtxpyO_CjAL8XrWKes/gviz/tq?tqx=out:csv")
+depreciation = dict(
+        F_dap = deprecitation_data["F_dap"],                           # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
         AEP = shared["preco_aeronave"], 
         Ne = shared["num_motores"],
-        EP = 0.25 * shared["preco_aeronave"],   # Preço de um motor (USD)
-        Np = 1, 
+        EP = deprecitation_data["EP"],   # Preço de um motor (USD)
+        Np = shared["num_motores"], 
         PP = 0.02 * shared["preco_aeronave"],   # Preço de uma hélice (USD)  
         ASP = 0.10 * shared["preco_aeronave"],  # Preço dos sistemas aviônicos (USD) 
-        DP_ap = 10,                             # Período de depreciação do airframe (anos)
+        DP_ap = deprecitation_data["DP_ap"],                             # Período de depreciação do airframe (anos)
         U_annbl = shared["annual_hours"],
         V_bl    = shared["block_speed_kts"],
-        F_deng  = 0.70,                         # Fator de depreciação dos motores # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
-        DP_eng = 7,                             # Período de depreciação dos motores (anos)  
-        F_dprp  = 0.70,                         # Fator de depreciação das hélices     # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]      
-        DP_prp = 7,                             # Período de depreciação das hélices (anos) # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
-        F_dav = 1.00,                           # Fator de depreciação dos aviônicos
-        DP_av = 5,                              # Período de depreciação dos aviônicos (anos)  
-        F_dapsp = 0.70,                         # Fator de depreciação das peças sobressalentes da aeronave # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
-        F_apsp = 0.10,                          # Fator de peças sobressalentes da aeronave   (ROSKAM)
-        DP_apsp = 10,                           # Período de depreciação das peças sobressalentes da aeronave
-        F_dengsp = 0.70,                        # Fator de depreciação das peças sobressalentes dos motores # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
-        F_engsp = 0.50,                         # Fator de peças sobressalentes dos motores  0.50 (ROSKAM)
-        ESPPF = 1.50,                           # Fator de preço das peças sobressalentes dos motores   1.50 (ROSKAM)
-        DP_engsp = 7,                           # Período de depreciação das peças sobressalentes dos motores (anos)
-    ),
+        F_deng  = deprecitation_data["F_deng"],                         # Fator de depreciação dos motores # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
+        DP_eng = deprecitation_data["DP_eng"],                             # Período de depreciação dos motores (anos)  
+        F_dprp  = deprecitation_data["F_dprp"],                         # Fator de depreciação das hélices     # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]      
+        DP_prp = deprecitation_data["DP_prp"],                             # Período de depreciação das hélices (anos) # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
+        F_dav = deprecitation_data["F_dav"],                           # Fator de depreciação dos aviônicos
+        DP_av = deprecitation_data["DP_av"],                              # Período de depreciação dos aviônicos (anos)  
+        F_dapsp = deprecitation_data["F_dapsp"],                         # Fator de depreciação das peças sobressalentes da aeronave # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
+        F_apsp = deprecitation_data["F_apsp"],                          # Fator de peças sobressalentes da aeronave   (ROSKAM)
+        DP_apsp = deprecitation_data["DP_apsp"],                           # Período de depreciação das peças sobressalentes da aeronave
+        F_dengsp = deprecitation_data["F_dengsp"],                        # Fator de depreciação das peças sobressalentes dos motores # O caravan tem bom valor de venda depois de 10 anos/ Assim não uso valor do roskna de 85%, mas sim 70% [Ian]
+        F_engsp = deprecitation_data["F_engsp"],                         # Fator de peças sobressalentes dos motores  0.50 (ROSKAM)
+        ESPPF = deprecitation_data["ESPPF"],                           # Fator de preço das peças sobressalentes dos motores   1.50 (ROSKAM)
+        DP_engsp = deprecitation_data["DP_engsp"],                           # Período de depreciação das peças sobressalentes dos motores (anos)
+    )
 
-
-
-
-    "taxes": dict(
-        mtow_t        = 4.0,
+taxes_data = sheet_to_dict("https://docs.google.com/spreadsheets/d/1dpENsU2FowNpP5fshMtVdyJTbRzT8agEG-RmGGxakbk/gviz/tq?tqx=out:csv")
+taxes = dict(
+        mtow_t        = flight["peso_max_decolagem"] / 1000,
         distance_km   = shared["distance_km"],
-        group_type    = "I",
-        airport_class = "B",
-        tan_unit      = 1.14,
-        tat_app_unit  = 126.16,
-        tat_adr_unit  = 504.65,
-        num_ops       = 1,
-    ),
+        group_type    = taxes_data["group_type"],
+        airport_class = taxes_data["airport_class"],
+        tan_unit      = taxes_data["tan_unit"],
+        tat_app_unit  = taxes_data["tat_app_unit"],
+        tat_adr_unit  = taxes_data["tat_adr_unit"],
+        num_ops       = taxes_data["num_ops"],
+    )
+# --- dicionário principal -------------------------------------------------
+inputs = {
+    "shared": shared,
+
+    "flight": flight,
+
+    "maint": maint,
+    
+    "capital": capital,
+
+    "depr": depreciation,
+
+    "taxes": taxes
 }

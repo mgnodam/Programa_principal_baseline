@@ -13,17 +13,17 @@ Created on Wed Mar 12 08:49:13 2025
 class CustoManutencao:
     def __init__(self,
                  # horas de manutenção por tipo de check (airframe)
+                 annual_hours,
                  block_time_hr, 
-                 hr_check_a,      # A — Daily check / pré-voo
-                 hr_check_b,      # B — 25 h
-                 hr_check_c,      # C — 50 h
-                 hr_check_d,      # D — 100 h
-                 hr_check_e,      # E — 200 h
-                 hr_check_f,      # F — 600 h (ou anual)
-                 hr_check_i,      # I — inspeções especiais
+                 hr_check_a,      # A — 750 H
+                 hr_check_b,      # B — 12000 h - Blades
+                 hr_check_c,      # C — 8000 h - ...Corrosãoo...
+                 hr_check_d,      # D — Daily check / pré-voo
+                 hr_check_fc,     # FC — 7000 h - Fadiga
+                 hr_check_m,      # M — 12 M (ou bianual)
                  # horas de manutenção por tipo de check (motores)
-                 hr_check_g,      # G — Hot Section Inspection (HSI)
-                 hr_check_h,      # H — Overhaul de Motor (TBO)
+                 hr_check_apu,      # G — Hot Section Inspection (HSI)
+                 hr_check_tbo,      # H — Overhaul de Motor (TBO)
                  # demais parâmetros de custo 
                  R1_ap,           # Taxa de mão de obra de manutenção do airframe e sistemas em USD/hora.
                  V_bl,            # Velocidade de bloco em nós.
@@ -39,15 +39,14 @@ class CustoManutencao:
  # ---------------------------------------------------------------
         # 1. INTERVALOS de cada inspeção  (horas de voo) – altere se necessário
  
-        int_a = block_time_hr          # A: cada voo
-        int_b = 25
-        int_c = 50
-        int_d = 100
-        int_e = 200
-        int_f = 600
-        int_i = 0.1                    # I: eventual / desprezível
-        int_g = 2000                    # G – HSI (exemplo)
-        int_h = 4000                   # H – Overhaul (exemplo)
+        int_a = 750
+        int_b = 12000
+        int_c = 8000
+        int_d = block_time_hr
+        int_fc = 7000
+        int_m = annual_hours / 2
+        int_apu = 6000
+        int_tbo = 20000 
         # ---------------------------------------------------------------
 
         # 2. >>> horas-homem POR HORA-BLOCO (airframe) <<<
@@ -56,15 +55,14 @@ class CustoManutencao:
             hr_check_b / int_b +
             hr_check_c / int_c +
             hr_check_d / int_d +
-            hr_check_e / int_e +
-            hr_check_f / int_f +
-            hr_check_i / int_i
+            hr_check_fc / int_fc +
+            hr_check_m / int_m
         ) / block_time_hr
 
         # 3. >>> horas-homem POR HORA-BLOCO (motores) <<<
         self.MHR_meng_bl = (
-            hr_check_g / int_g +
-            hr_check_h / int_h
+            hr_check_apu / int_apu +
+            hr_check_tbo / int_tbo
         ) / block_time_hr
 
         # 4. Demais atributos – inalterados

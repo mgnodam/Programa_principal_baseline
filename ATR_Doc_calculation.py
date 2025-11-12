@@ -29,7 +29,7 @@ import json
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-from ATR_Operation_input_ian_500nm import inputs
+from ATR_Operation_input_ian import inputs
 
 # ---- módulos de cálculo fornecidos pelo usuário --------------------------
 from ATR_Flight import Aeronave
