@@ -101,11 +101,8 @@ maint = dict(
         hr_check_a = maint_data["hr_check_a"],         # A — 750 h (Geral)
         hr_check_b = maint_data["hr_check_b"],         # B — 12000 h (Blades)
         hr_check_c = maint_data["hr_check_c"],         # C — 8000 h (Corrosão)
-        hr_check_fc = maint_data["hr_check_fc"],         # D — 7000 h (Fadiga)
-        hr_check_m = maint_data["hr_check_m"],         # E — 12M/24M
 
         # horas de manutenção por tipo de check (motores)
-        hr_check_apu = maint_data["hr_check_apu"],        # APU — 6000 H
         hr_check_tbo = maint_data["hr_check_tbo"],        # TBO — 20000 (Overhaul de Motor (TBO))
         # demais parâmetros de custo
         R1_ap      = maint_data["r1_ap"],        #  Taxa de mão de obra de manutenção do airframe e sistemas em USD/hora. [planilha sindicato/mercado]

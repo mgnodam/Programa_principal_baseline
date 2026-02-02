@@ -15,14 +15,11 @@ class CustoManutencao:
                  # horas de manutenção por tipo de check (airframe)
                  annual_hours,
                  block_time_hr, 
-                 hr_check_a,      # A — 750 H
-                 hr_check_b,      # B — 12000 h - Blades
-                 hr_check_c,      # C — 8000 h - ...Corrosãoo...
-                 hr_check_d,      # D — Daily check / pré-voo
-                 hr_check_fc,     # FC — 7000 h - Fadiga
-                 hr_check_m,      # M — 12 M (ou bianual)
+                 hr_check_a,      # A — 500 H
+                 hr_check_b,      # B — 10000 h - Blades
+                 hr_check_c,      # C — 4000 h - ...Corrosãoo...
+                 hr_check_d,      # D — Daily check
                  # horas de manutenção por tipo de check (motores)
-                 hr_check_apu,      # G — Hot Section Inspection (HSI)
                  hr_check_tbo,      # H — Overhaul de Motor (TBO)
                  # demais parâmetros de custo 
                  R1_ap,           # Taxa de mão de obra de manutenção do airframe e sistemas em USD/hora.
@@ -39,14 +36,11 @@ class CustoManutencao:
  # ---------------------------------------------------------------
         # 1. INTERVALOS de cada inspeção  (horas de voo) – altere se necessário
  
-        int_a = 750
-        int_b = 12000
-        int_c = 8000
-        int_d = block_time_hr
-        int_fc = 7000
-        int_m = annual_hours / 2
-        int_apu = 6000
-        int_tbo = 20000 
+        int_a = 375
+        int_b = 10500
+        int_c = 3600
+        int_d = 24
+        int_tbo = 5500
         # ---------------------------------------------------------------
 
         # 2. >>> horas-homem POR HORA-BLOCO (airframe) <<<
@@ -54,14 +48,11 @@ class CustoManutencao:
             hr_check_a / int_a +
             hr_check_b / int_b +
             hr_check_c / int_c +
-            hr_check_d / int_d +
-            hr_check_fc / int_fc +
-            hr_check_m / int_m
+            hr_check_d / int_d
         ) / block_time_hr
 
         # 3. >>> horas-homem POR HORA-BLOCO (motores) <<<
         self.MHR_meng_bl = (
-            hr_check_apu / int_apu +
             hr_check_tbo / int_tbo
         ) / block_time_hr
 
