@@ -19,9 +19,9 @@ def sheet_to_dict(url):
     """
 
     # tenta ler CSV diretamente (funciona com links do Google Sheets)
-    df = pd.read_csv(url)
+    df = pd.read_csv(url, header=0, dtype=str, keep_default_na=False)
 
-    # pega as duas primeiras colunas
+    # pega a primeira coluna
     colunas = df.columns[:2]
 
     def try_float(x):
@@ -29,7 +29,7 @@ def sheet_to_dict(url):
         try:
             # remove vírgula decimal se houver (ex: "1,5" -> "1.5")
             return float(str(x).replace(",", "."))
-        except (ValueError, TypeError):
+        except Exception as e:
             return x
 
     # aplica a conversão valor a valor
@@ -59,7 +59,7 @@ shared = dict(
                            # em estudos híbridos, o dimensionamento de geradores e sistemas auxiliares.
     )
 
-flight_data = sheet_to_dict("https://docs.google.com/spreadsheets/d/1Z-e2u0DK4LDfgLZaUOrdi2H1LU-JKsL-cKYV5SuhU-Q/gviz/tq?tqx=out:csv")
+flight_data = sheet_to_dict("https://docs.google.com/spreadsheets/d/1p5ca3NIWiy93jDp__4t3miD_keJftfQFCqozg4pgbU0/gviz/tq?tqx=out:csv")
 flight = dict(
         tipo                  = flight_data["tipo"],                # Tipo da aeronave (Comercial ou Aviação Geral)
         peso_max_decolagem    = flight_data["peso_max_decolagem"],                          # Peso máximo de decolagem da aeronave em kg
@@ -109,7 +109,7 @@ maint = dict(
         V_bl       = shared["block_speed_kts"],
         Ne         = shared["num_motores"],
         R1_eng     = 1.35 * maint_data["r1_ap"],        #  Taxa de mão de obra de manutenção dos motores em USD/hora. [planilha sindicato/mercado]
-        C_mat_apblhr  = 0.67 * maint_data["r1_ap"],      #  Custo dos materiais de manutenção do airframe e sistemas por bloco de hora em USD/hora.[Ian - 40% insumos 60% mão-de-obra]
+        C_mat_apblhr  = 0.4 * maint_data["r1_ap"],      #  Custo dos materiais de manutenção do airframe e sistemas por bloco de hora em USD/hora.[Ian - 40% insumos 60% mão-de-obra]
         C_mat_engblhr = 1.86 * 1.35 * maint_data["r1_ap"],      #  (1.86*r1_eng) Custo dos materiais de manutenção dos motores por bloco de hora em USD/hora. [Ian - 65% insumos 35% mão-de-obra]
         
         f_amb_lab  = maint_data["f_amb_lab"],       #  Fator de sobrecarga para mão de obra.        

@@ -75,8 +75,11 @@ class Aeronave:
         self.horas_voo_anuais = horas_voo_anuais
         self.taxa_seguro = taxa_seguro  # Taxa do seguro da fuselagem
 
+        print(senioridade_piloto)
         # Dicionário de fatores de senioridade
-        self.fator_senioridade = {"iniciante": 1.0, "pleno": 1.3, "sênior": 1.75}
+        self.fator_senioridade = {"iniciante": 1.0, "pleno": 1.3, "senior": 1.75}
+        
+        print(self.fator_senioridade[senioridade_piloto])
 
         # Aplicação dos fatores de senioridade aos salários
         self.salarios_tripulacao = {
